@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SunTrack Optimizer Pro</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for standard icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js -->
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-sun icon-white"></i>
+            </div>
+            <div class="brand-text">
+                <h1>SunTrack</h1>
+                <p>Optimizer Pro</p>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <button class="nav-item active" data-target="dashboard">
+                <i class="fa-solid fa-border-all"></i> Dashboard
+            </button>
+            <button class="nav-item" data-target="analytics">
+                <i class="fa-solid fa-chart-line"></i> Analytics
+            </button>
+            <button class="nav-item" data-target="controls">
+                <i class="fa-solid fa-sliders"></i> Controls
+            </button>
+            <button class="nav-item" data-target="logs">
+                <i class="fa-regular fa-file-lines"></i> System Logs
+            </button>
+        </nav>
+
+        <div class="system-status">
+            <div class="status-label">System Status</div>
+            <div class="status-value">
+                <span class="status-dot"></span> Online & Tracking
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <!-- View: Dashboard -->
+        <div id="view-dashboard" class="view active">
+            <header class="view-header">
+                <h2>Live Monitoring</h2>
+                <p>Real-time solar tracking system status</p>
+            </header>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>CURRENT POWER</h3>
+                        <i class="fa-solid fa-bolt text-orange"></i>
+                    </div>
+                    <div class="kpi-value">
+                        <span class="value" id="kpi-power">187.9</span> <span class="unit">W</span>
+                    </div>
+                    <div class="kpi-trend text-green">
+                        +12% vs last hour
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>IRRADIANCE</h3>
+                        <i class="fa-solid fa-sun text-orange-light"></i>
+                    </div>
+                    <div class="kpi-value">
+                        <span class="value" id="kpi-irradiance">966</span> <span class="unit">W/m²</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>PANEL TEMP</h3>
+                        <i class="fa-solid fa-temperature-half text-orange-light"></i>
+                    </div>
+                    <div class="kpi-value">
+                        <span class="value" id="kpi-temp">49.0</span> <span class="unit">°C</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <h3>DAILY ENERGY</h3>
+                        <i class="fa-solid fa-gauge-high text-orange-light"></i>
+                    </div>
+                    <div class="kpi-value">
+                        <span class="value" id="kpi-energy">4.51</span> <span class="unit">kWh</span>
+                    </div>
+                    <div class="kpi-trend text-green">
+                        +5% vs yesterday
+                    </div>
+                </div>
+            </div>
+            <!-- SOLAR POSITION CARD -->
+<div class="card solar-position-card">
+    <div class="solar-pos-header">
+        <div class="solar-pos-title">
+            <i class="fa-solid fa-location-crosshairs text-orange"></i>
+            <h3>Optimal Solar Position</h3>
+        </div>
+        <div class="solar-pos-datetime">
+            <i class="fa-regular fa-clock"></i>
+            <span id="solar-datetime">—</span>
+        </div>
+    </div>
+    <!-- 
+    <div class="solar-pos-grid">
+        <div class="solar-pos-item">
+            <div class="solar-pos-icon bg-orange-light">
+                <i class="fa-solid fa-arrow-up text-orange"></i>
+            </div>
+            <div class="solar-pos-info">
+                <span class="solar-pos-label">Optimal Elevation</span>
+                <span class="solar-pos-value text-orange" id="optimal-elevation">—°</span>
+                <span class="solar-pos-desc">Recommended tilt angle</span>
+            </div>
+        </div>
+        <div class="solar-pos-item">
+            <div class="solar-pos-icon bg-orange-light">
+                <i class="fa-solid fa-compass text-orange"></i>
+            </div>
+            <div class="solar-pos-info">
+                <span class="solar-pos-label">Optimal Azimuth</span>
+                <span class="solar-pos-value text-orange" id="optimal-azimuth">—°</span>
+                <span class="solar-pos-desc">Recommended orientation</span>
+            </div>
+        </div>
+        <div class="solar-pos-item">
+            <div class="solar-pos-icon bg-green-light">
+                <i class="fa-solid fa-chart-simple" style="color:#10b981"></i>
+            </div>
+            <div class="solar-pos-info">
+                <span class="solar-pos-label">Tracking Accuracy</span>
+                <span class="solar-pos-value" id="tracking-accuracy" style="color:#10b981">—%</span>
+                <span class="solar-pos-desc">Current vs optimal angle</span>
+            </div>
+        </div>
+        <div class="solar-pos-item">
+            <div class="solar-pos-icon" style="background:#ede9fe">
+                <i class="fa-solid fa-bolt" style="color:#7c3aed"></i>
+            </div>
+            <div class="solar-pos-info">
+                <span class="solar-pos-label">Est. Energy Gain</span>
+                <span class="solar-pos-value" id="energy-gain" style="color:#7c3aed">—%</span>
+                <span class="solar-pos-desc">vs fixed installation</span>
+            </div>
+        </div>
+    </div>
+    -->
+    <div class="solar-location-bar">
+        <i class="fa-solid fa-map-pin text-orange"></i>
+        <span>Location: </span>
+        <span id="location-display">Tunis, Tunisia (36.82°N, 10.17°E)</span>
+        <span style="color:#e5e7eb">|</span>
+        <span id="solar-season-label">—</span>
+    </div>
+</div>
+
+            <div class="dashboard-grid">
+                <!-- Left Column -->
+                <div class="left-col">
+                    <div class="card compass-card">
+                        <h3>Panel Orientation</h3>
+                        <div class="compass-container">
+                            <svg viewBox="0 0 200 200" class="compass-svg">
+                                <!-- Outer Dial Lines -->
+                                <circle cx="100" cy="100" r="85" fill="none" stroke="#e5e7eb" stroke-width="2"
+                                    stroke-dasharray="4 8" />
+                                <!-- Crosshairs -->
+                                <line x1="100" y1="15" x2="100" y2="25" stroke="#9ca3af" stroke-width="2" />
+                                <line x1="100" y1="175" x2="100" y2="185" stroke="#9ca3af" stroke-width="2" />
+                                <line x1="15" y1="100" x2="25" y2="100" stroke="#9ca3af" stroke-width="2" />
+                                <line x1="175" y1="100" x2="185" y2="100" stroke="#9ca3af" stroke-width="2" />
+
+                                <!-- Diagonals -->
+                                <line x1="40" y1="40" x2="47" y2="47" stroke="#e5e7eb" stroke-width="2" />
+                                <line x1="160" y1="40" x2="153" y2="47" stroke="#e5e7eb" stroke-width="2" />
+                                <line x1="40" y1="160" x2="47" y2="153" stroke="#e5e7eb" stroke-width="2" />
+                                <line x1="160" y1="160" x2="153" y2="153" stroke="#e5e7eb" stroke-width="2" />
+
+                                <!-- Letters -->
+                                <text x="100" y="38" class="compass-label" text-anchor="middle">N</text>
+                                <text x="100" y="170" class="compass-label" text-anchor="middle">S</text>
+                                <text x="35" y="104" class="compass-label" text-anchor="middle">W</text>
+                                <text x="165" y="104" class="compass-label" text-anchor="middle">E</text>
+
+                                <!-- Needles -->
+                                <!-- Grey static needle pointing North (0) -->
+                                <line x1="100" y1="100" x2="100" y2="55" stroke="#4b5563" stroke-width="3"
+                                    stroke-linecap="round" />
+
+                                <!-- Central Dot -->
+                                <circle cx="100" cy="100" r="5" fill="#f59e0b" />
+
+                                <!-- Red dynamic needle pointing South (Azimuth) -->
+                                <g id="azimuth-needle"
+                                    style="transform-origin: 100px 100px; transform: rotate(181deg);">
+                                    <line x1="100" y1="100" x2="100" y2="55" stroke="#ef4444" stroke-width="3"
+                                        stroke-linecap="round" />
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="compass-value">
+                            <span class="value text-orange" id="val-azimuth">°</span>
+                            <span class="label">AZIMUTH</span>
+                        </div>
+                    </div>
+
+                    <div class="card tilt-card">
+                        <h3>Tilt Angle</h3>
+                        <div class="tilt-container">
+                            <canvas id="tiltChart"></canvas>
+                        </div>
+                        <div class="compass-value mt-n4">
+                            <span class="value text-orange" id="val-tilt">°</span>
+                            <span class="label">TILT ANGLE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="right-col">
+                    <div class="card history-card">
+                        <div class="card-header-flex">
+                            <h3>Power Output History</h3>
+                            <div class="legend">
+                                <span class="legend-item"><span class="dot power-dot"></span>Power (W)</span>
+                                <span class="legend-item"><span class="dot irr-dot"></span>Irradiance (W/m²)</span>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper-large">
+                            <canvas id="historyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Analytics -->
+        <div id="view-analytics" class="view">
+            <header class="view-header">
+                <h2>Performance Analytics</h2>
+                <p>Historical analysis and efficiency metrics</p>
+            </header>
+
+            <div class="analytics-grid">
+                <div class="card analytics-chart-card">
+                    <h3>Weekly Energy Production</h3>
+                    <div class="chart-wrapper-large">
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card analytics-chart-card">
+                    <h3>Efficiency Improvement</h3>
+                    <div class="chart-wrapper-large">
+                        <canvas id="efficiencyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <!-- ENERGY EFFICIENCY PANEL -->
+<div class="card energy-efficiency-card">
+    <div class="card-header-flex">
+        <div>
+            <h3 style="text-align:left; margin-bottom:4px;">⚡ Energy Efficiency Analysis</h3>
+            <p class="subtitle">Extra energy the tracker captures vs a fixed panel</p>
+        </div>
+        <div class="efficiency-badge" id="overall-efficiency-badge">Calculating...</div>
+    </div>
+    <div class="efficiency-grid">
+        <div class="efficiency-stat">
+            <span class="eff-label">Tracker Output Today</span>
+            <span class="eff-value text-orange" id="eff-tracker">—</span>
+            <span class="eff-unit">kWh</span>
+        </div>
+        <div class="efficiency-stat">
+            <span class="eff-label">Fixed Panel Estimate</span>
+            <span class="eff-value" id="eff-fixed">—</span>
+            <span class="eff-unit">kWh</span>
+        </div>
+        <div class="efficiency-stat">
+            <span class="eff-label">Energy Gained</span>
+            <span class="eff-value text-green" id="eff-gained">—</span>
+            <span class="eff-unit">kWh</span>
+        </div>
+        <div class="efficiency-stat">
+            <span class="eff-label">Efficiency Gain</span>
+            <span class="eff-value text-green" id="eff-percent">—</span>
+            <span class="eff-unit">%</span>
+        </div>
+    </div>
+    <div class="efficiency-bar-section">
+        <div class="eff-bar-labels">
+            <span>Fixed Panel</span>
+            <span>Tracking System</span>
+        </div>
+        <div class="eff-bar-track">
+            <div class="eff-bar-fixed" id="eff-bar-fixed"></div>
+            <div class="eff-bar-tracker" id="eff-bar-tracker"></div>
+        </div>
+    </div>
+</div>
+
+            <div class="analytics-kpi-grid">
+                <div class="card bg-orange-light kpi-bottom">
+                    <h4>Total Energy Saved</h4>
+                    <div class="value">1,240 <span class="unit">kWh</span></div>
+                    <div class="desc">Since installation</div>
+                </div>
+                <div class="card bg-green-light kpi-bottom">
+                    <h4>Tracking Advantage</h4>
+                    <div class="value">+28.5%</div>
+                    <div class="desc">Vs. fixed tilt</div>
+                </div>
+                <div class="card bg-gray-light kpi-bottom">
+                    <h4>System Uptime</h4>
+                    <div class="value">99.9%</div>
+                    <div class="desc">Last 30 days</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Controls -->
+        <div id="view-controls" class="view">
+            <header class="view-header">
+                <h2>System Controls</h2>
+                <p>Manual override and configuration</p>
+            </header>
+
+            <div class="controls-grid">
+                <!-- Left Column -->
+                <div class="card positioning-card">
+                    <div class="card-header-flex">
+                        <div>
+                            <h3>Positioning Control</h3>
+                            <p class="subtitle">Adjust panel orientation manually</p>
+                        </div>
+                        <div class="mode-badge text-green">MODE: MANUAL</div>
+                    </div>
+
+                    <div class="control-row auto-track-row">
+                        <div>
+                            <h4>Automatic Tracking</h4>
+                            <p class="subtitle">Allow system to track sun automatically</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div class="control-row slider-row">
+                        <div class="slider-header">
+                            <label>Tilt Angle (0-90°)</label>
+                            <span class="range-badge">0°</span>
+                        </div>
+                        <input type="range" class="custom-range gray-range" min="0" max="90" value="0">
+                    </div>
+
+                    <div class="control-row slider-row">
+                        <div class="slider-header">
+                            <label>Orientation (0-360°)</label>
+                            <span class="range-badge" id="angleValue">180°</span>
+                        </div>
+                        <input type="range" class="custom-range orange-range"   id="orientationSlider" min="0" max="180" value="180"
+                            style="--val: 50%;">
+                    </div>
+
+                    <button class="btn btn-primary btn-block" id="applyBtn">Apply Changes</button>
+                </div>
+
+                <!-- Right Column -->
+                <div class="controls-sidebar">
+                    <div class="card emergency-card">
+                        <div class="card-header-flex red-header">
+                            <h3><i class="fa-solid fa-shield-halved"></i> Emergency Actions</h3>
+                        </div>
+                        <button class="btn btn-danger btn-block" id="stow-btn">STOW PANEL</button>
+                        <p class="subtitle text-center mt-2">Sets tilt to 0° and locks orientation for high winds.</p>
+                    </div>
+
+                    <div class="card calibration-card">
+                        <div class="card-header-flex orange-header">
+                            <h3><i class="fa-solid fa-rotate"></i> Calibration</h3>
+                        </div>
+                        <div class="stack-buttons">
+                            <button class="btn btn-outline btn-block">Calibrate Sensors</button>
+                            <button class="btn btn-outline btn-block">Reset Zero Position</button>
+                            <button class="btn btn-outline btn-block">Diagnostic Run</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- VIEW: SYSTEM LOGS -->
+<div id="view-logs" class="view">
+    <header class="view-header">
+        <h2>System Logs</h2>
+        <p>Event history and diagnostics</p>
+    </header>
+    <div class="card">
+        <div class="card-header-flex">
+            <h3 style="text-align:left; margin-bottom:0">Recent Events</h3>
+            <button class="btn btn-outline" id="refresh-logs-btn" style="padding:8px 16px; font-size:12px;">
+                <i class="fa-solid fa-rotate-right"></i> Refresh
+            </button>
+        </div>
+        <div class="log-filters">
+            <button class="log-filter active" data-level="all">All</button>
+            <button class="log-filter" data-level="info">Info</button>
+            <button class="log-filter" data-level="warning">Warning</button>
+            <button class="log-filter" data-level="error">Error</button>
+        </div>
+        <div class="log-entries" id="log-entries"></div>
+    </div>
+</div>
+    </main>
+
+    <!-- UI Toast Notification -->
+    <div class="toast-notification" id="stow-toast">
+        <div class="toast-content">
+            <h4>Stow Command Sent</h4>
+            <p>Panel is moving to safe stow position.</p>
+        </div>
+        <button class="toast-close" id="toast-close-btn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- 
+  This comment spans
+  multiple lines.
+    -->
+   
+    <script type="module">
+const firebaseConfig = {
+  apiKey: "AIzaSyBY5dSsjRSH6i-8rvkXooKM3kjNGzL-i1k",
+  databaseURL: "https://esp32-3740e-default-rtdb.europe-west1.firebasedatabase.app"
+};
+
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+
+
+
+// ================= LIVE SENSOR UPDATE =================
+
+// Reads value from Firebase and updates dashboard
+
+db.ref("solar/elevation").on("value", (snapshot) => {
+
+    document.getElementById("val-tilt").innerText =
+        snapshot.val();
+
+});
+db.ref("solar/azimuth").on("value", (snapshot) => {
+    document.getElementById("val-azimuth").innerText =
+        snapshot.val();
+});
+
+db.ref("solar/elevation").on("value", (snapshot) => {
+    document.getElementById("optimal-elevation").innerText =
+        snapshot.val();
+});
+
+
+// ================= SLIDER ELEMENTS =================
+
+const slider =
+document.getElementById("orientationSlider");
+
+const angleText =
+document.getElementById("angleValue");
+
+const applyBtn =
+document.getElementById("applyBtn");
+
+
+
+// ================= SEND TO FIREBASE =================
+
+applyBtn.addEventListener("click", () => {
+
+    const angle = parseInt(slider.value);
+
+    // Send angle to Firebase
+    db.ref("servo/orientation").set(angle);
+
+    console.log("Sent angle:", angle);
+
+});
+
+</script>
+
+</script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
