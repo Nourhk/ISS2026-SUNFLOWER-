@@ -6,12 +6,12 @@ extern Servo servoH;
 extern Servo servoV;
 
 // WiFi
-#define WIFI_SSID "Ooredoo-ALHN-022C"
-#define WIFI_PASSWORD "qCKMZW7eKx"
+#define WIFI_SSID ""
+#define WIFI_PASSWORD ""
 
 // Firebase
-#define API_KEY "AIzaSyBY5dSsjRSH6i-8rvkXooKM3kjNGzL-i1k"
-#define DATABASE_URL "https://esp32-3740e-default-rtdb.europe-west1.firebasedatabase.app"
+#define API_KEY ""
+#define DATABASE_URL ""
 
 // Firebase objects
 FirebaseData fbdo;
@@ -56,11 +56,11 @@ void firebasesetup() {
   Serial.println("\nConnected!");
 
   // Firebase config
-  config.api_key ="AIzaSyBY5dSsjRSH6i-8rvkXooKM3kjNGzL-i1k";
-  config.database_url = "https://esp32-3740e-default-rtdb.europe-west1.firebasedatabase.app";
+  config.api_key ="";
+  config.database_url = "";
   // 🔥 MUST BE INSIDE setup()
-  auth.user.email = "nourhajkacem2006@gmail.com";
-  auth.user.password = "ISS1234";
+  auth.user.email = "";
+  auth.user.password = "";
 
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
