@@ -17,19 +17,7 @@ const int servoVPin = 18;
 #define uS_TO_S_FACTOR 1000000ULL
 #define SLEEP_TIME 720  // 12 minutes = 720 seconds
 
-// ===================== YOUR FUNCTIONS =====================
-void ldrsetup() {
-  // your setup code
-}
 
-void sunsetup() {
-  // your setup code
-}
-
-void ldrloop() {
-  // your LDR logic
-  Serial.println("LDR running...");
-}
 
 void sunloop() {
   // your sun tracking logic
@@ -46,12 +34,11 @@ void setup() {
   servoV.attach(servoVPin);
 
   ldrsetup();
-  sunsetup();
-
+  firebasesetup();
   Serial.println("Running sensors...");
 
   ldrloop();
-  sunloop();
+  firebaseloop();
 
   Serial.println("Going to sleep for 12 minutes");
 
